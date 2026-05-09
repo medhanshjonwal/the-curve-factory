@@ -6,6 +6,27 @@
   <title>The Curve Factory</title>
   <link rel="preconnect" href="https://www.gstatic.com">
   <link rel="preconnect" href="https://challenges.cloudflare.com">
+  <script>
+    window.__curveFactoryTurnstileToken = "";
+    window.onTurnstileSuccess = function (token) {
+      window.__curveFactoryTurnstileToken = token || "";
+      window.dispatchEvent(new CustomEvent("curvefactory:turnstile", {
+        detail: { status: "success", token: window.__curveFactoryTurnstileToken }
+      }));
+    };
+    window.onTurnstileError = function () {
+      window.__curveFactoryTurnstileToken = "";
+      window.dispatchEvent(new CustomEvent("curvefactory:turnstile", {
+        detail: { status: "error" }
+      }));
+    };
+    window.onTurnstileExpired = function () {
+      window.__curveFactoryTurnstileToken = "";
+      window.dispatchEvent(new CustomEvent("curvefactory:turnstile", {
+        detail: { status: "expired" }
+      }));
+    };
+  </script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <style>
     * { box-sizing: border-box; }
@@ -481,7 +502,7 @@
     const emailLink = document.getElementById("emailLink");
 
     let currentUser = null;
-    let turnstileToken = "";
+    let turnstileToken = window.__curveFactoryTurnstileToken || "";
 
     function makeId(prefix) {
       const random = Math.random().toString(36).slice(2).toUpperCase();
@@ -584,20 +605,13 @@
       emailLink.href = `mailto:${encodeURIComponent(email)}?subject=${subject}&body=${body}`;
     }
 
-    window.onTurnstileSuccess = function (token) {
-      turnstileToken = token;
-      setMessage("", "");
-    };
-
-    window.onTurnstileError = function () {
-      turnstileToken = "";
-      setMessage("CAPTCHA failed", "error");
-    };
-
-    window.onTurnstileExpired = function () {
-      turnstileToken = "";
-      setMessage("CAPTCHA failed", "error");
-    };
+    window.addEventListener("curvefactory:turnstile", function (event) {
+      const detail = event.detail || {};
+      turnstileToken = detail.token || window.__curveFactoryTurnstileToken || "";
+      if (detail.status === "success") setMessage("", "");
+      if (detail.status === "error") setMessage("CAPTCHA failed. Check the Turnstile site key and allowed domain.", "error");
+      if (detail.status === "expired") setMessage("CAPTCHA expired. Please complete it again.", "error");
+    });
 
     signInButton.addEventListener("click", async function () {
       try {
