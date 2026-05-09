@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Curve Factory</title>
+  <link rel="preconnect" href="https://www.gstatic.com">
+  <link rel="preconnect" href="https://challenges.cloudflare.com">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: #24292f;
+      background: #f6f8fa;
+      font: 16px/1.55 Arial, Helvetica, sans-serif;
+    }
+
+    .page {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 28px 18px 48px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #d8dee4;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+    }
+
+    .mark {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      color: #ffffff;
+      background: #1f6f68;
+      border-radius: 8px;
+      font-weight: 800;
+    }
+
+    .auth-status {
+      color: #57606a;
+      font-size: 14px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(280px, .8fr);
+      gap: 28px;
+      align-items: start;
+      padding: 28px 0;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      color: #0b1f32;
+      font-size: 42px;
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      color: #0b1f32;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      color: #0b1f32;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    p { margin: 0 0 14px; }
+
+    .lead {
+      max-width: 720px;
+      color: #3d4854;
+      font-size: 18px;
+    }
+
+    .card {
+      padding: 22px;
+      background: #ffffff;
+      border: 1px solid #d8dee4;
+      border-radius: 8px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(300px, .8fr);
+      gap: 22px;
+      margin-top: 18px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 16px;
+      color: #ffffff;
+      background: #0969da;
+      border: 1px solid #0969da;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .button:hover,
+    .button:focus { background: #0757b7; }
+
+    .button.secondary {
+      color: #24292f;
+      background: #f6f8fa;
+      border-color: #d0d7de;
+    }
+
+    .button.secondary:hover,
+    .button.secondary:focus { background: #eef1f4; }
+
+    .button.success {
+      background: #1a7f37;
+      border-color: #1a7f37;
+    }
+
+    .button:disabled {
+      opacity: .62;
+      cursor: wait;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      min-height: 42px;
+      padding: 10px 12px;
+      color: #24292f;
+      background: #ffffff;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      font: inherit;
+    }
+
+    input[readonly] {
+      color: #57606a;
+      background: #f6f8fa;
+    }
+
+    .field { margin-bottom: 15px; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    .muted {
+      color: #57606a;
+      font-size: 14px;
+    }
+
+    .note {
+      margin-top: 18px;
+      padding: 14px;
+      color: #5c3b00;
+      background: #fff8c5;
+      border: 1px solid #f0d98c;
+      border-radius: 8px;
+      font-weight: 700;
+    }
+
+    .message {
+      min-height: 24px;
+      margin: 14px 0 0;
+      font-weight: 700;
+    }
+
+    .message.error { color: #cf222e; }
+    .message.success { color: #1a7f37; }
+
+    .license-result {
+      display: none;
+      margin-top: 18px;
+      padding: 16px;
+      background: #dafbe1;
+      border: 1px solid #aceebb;
+      border-radius: 8px;
+    }
+
+    .license-key {
+      display: block;
+      margin: 10px 0;
+      padding: 12px;
+      color: #116329;
+      background: #ffffff;
+      border: 1px dashed #4ac26b;
+      border-radius: 6px;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 20px;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .download-panel {
+      display: none;
+      margin-top: 16px;
+      padding: 16px;
+      background: #ddf4ff;
+      border: 1px solid #b6e3ff;
+      border-radius: 8px;
+    }
+
+    .software-box {
+      min-height: 220px;
+      display: grid;
+      place-items: center;
+      color: #dff7ef;
+      background:
+        linear-gradient(140deg, rgba(15, 49, 77, .95), rgba(23, 118, 109, .92)),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.08) 0 1px, transparent 1px 34px);
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .software-box strong {
+      display: block;
+      font-size: 26px;
+      letter-spacing: 0;
+    }
+
+    ul { padding-left: 22px; }
+    li { margin-bottom: 8px; }
+
+    .hidden { display: none; }
+
+    @media (max-width: 820px) {
+      .hero,
+      .grid { grid-template-columns: 1fr; }
+      h1 { font-size: 34px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">
+        <span class="mark">TCF</span>
+        <span>The Curve Factory</span>
+      </div>
+      <div class="auth-status" id="authStatus">Not signed in</div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <h1>The Curve Factory</h1>
+        <p class="lead">
+          A licensed Adobe After Effects curve editing panel for building,
+          saving, and applying easing curves with a focused visual workflow.
+        </p>
+        <div class="actions">
+          <button class="button" id="signInButton" type="button">Sign in with Google</button>
+          <button class="button secondary hidden" id="signOutButton" type="button">Sign out</button>
+        </div>
+        <p class="note">
+          Sign in with Google, claim one free license, then the compiled build
+          download appears.
+        </p>
+      </div>
+
+      <aside class="software-box" aria-label="The Curve Factory preview">
+        <div>
+          <strong>Curve Factory</strong>
+          <span>After Effects CEP Plugin</span>
+        </div>
+      </aside>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>Get Free License</h2>
+        <p class="muted">
+          Your Google account email is used to prevent duplicate free licenses.
+          This browser also gets a local request device ID.
+        </p>
+
+        <form id="licenseForm">
+          <div class="field">
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" autocomplete="name" required disabled>
+          </div>
+
+          <div class="field">
+            <label for="email">Google Email</label>
+            <input id="email" name="email" type="email" readonly required>
+          </div>
+
+          <div class="field">
+            <label for="country">Country</label>
+            <input id="country" name="country" type="text" autocomplete="country-name" required disabled>
+          </div>
+
+          <div class="field">
+            <label>CAPTCHA</label>
+            <!-- Replace this with your Cloudflare Turnstile site key before publishing. -->
+            <div class="cf-turnstile"
+                 data-sitekey="0x4AAAAAADMGIJvCFNaVP_b2"
+                 data-callback="onTurnstileSuccess"
+                 data-error-callback="onTurnstileError"
+                 data-expired-callback="onTurnstileExpired"></div>
+            <p class="muted">For production, verify this token on a backend.</p>
+          </div>
+
+          <div class="actions">
+            <button class="button success" id="requestButton" type="submit" disabled>Get Free License</button>
+            <button class="button secondary" id="resetLocalData" type="button">Reset Local Test Data</button>
+          </div>
+        </form>
+
+        <p id="message" class="message"></p>
+
+        <div class="license-result" id="licenseResult">
+          <strong>License issued and saved:</strong>
+          <span class="license-key" id="licenseKeyText"></span>
+          <p>Use this key inside the plugin activation screen.</p>
+          <div class="actions">
+            <button class="button secondary" id="copyKey" type="button">Copy License Key</button>
+            <a class="button secondary" id="emailLink" href="#">Open Email Draft</a>
+          </div>
+        </div>
+
+        <div class="download-panel" id="downloadPanel">
+          <h3>Download Build</h3>
+          <p>The download appears after a license is issued.</p>
+          <a class="button" href="./dist/CurveFactory-Licensed-dist-20260509180025.zip" download>Download Compiled Build</a>
+        </div>
+      </div>
+
+      <aside class="card">
+        <h2>Project Links</h2>
+        <ul>
+          <li><a href="./dist/CurveFactory-Licensed-dist-20260509180025.zip">Build package path</a></li>
+          <li>Firestore collection: <strong>licenses</strong></li>
+          <li>Support email: <strong>support@thecurvefactory.com</strong></li>
+        </ul>
+
+        <h3>Request Device ID</h3>
+        <p class="muted" id="deviceIdPreview"></p>
+      </aside>
+    </section>
+
+    <section class="card" style="margin-top: 22px;">
+      <h2>Instructions</h2>
+      <ul>
+        <li>Sign in with Google.</li>
+        <li>Complete CAPTCHA and click <strong>Get Free License</strong>.</li>
+        <li>The page checks if your email or this browser already has a license.</li>
+        <li>One unused Firestore license is marked as issued and shown to you.</li>
+        <li>The build download button appears after the license is issued.</li>
+        <li>Activate the plugin with the issued license key.</li>
+      </ul>
+    </section>
+
+    <section class="card" style="margin-top: 22px;">
+      <h2>Installation Guide</h2>
+      <ol>
+        <li>Download the Curve Factory build after your free license is issued.</li>
+        <li>Extract the downloaded zip file.</li>
+        <li>Copy the extracted <strong>CurveFactory</strong> folder.</li>
+        <li>Paste it into your Adobe CEP extensions folder.</li>
+        <li>Windows path: <code>C:\Program Files (x86)\Common Files\Adobe\CEP\extensions\</code></li>
+        <li>macOS path: <code>~/Library/Application Support/Adobe/CEP/extensions/</code></li>
+        <li>Restart After Effects.</li>
+        <li>Open <strong>Window &gt; Extensions &gt; Curve Factory</strong>.</li>
+        <li>Enter the license key issued on this page and click Activate.</li>
+      </ol>
+    </section>
+
+    <section class="card" style="margin-top: 22px;">
+      <h2>Updating Curve Factory</h2>
+      <ol>
+        <li>Close After Effects before updating.</li>
+        <li>Download the newer Curve Factory build.</li>
+        <li>Extract the new zip.</li>
+        <li>Replace the old <strong>CurveFactory</strong> extension files with the new files.</li>
+        <li>Keep the same extension folder name and manifest IDs.</li>
+        <li>Do not reset local activation unless support asks you to do so.</li>
+        <li>Open After Effects again and launch Curve Factory.</li>
+      </ol>
+      <p class="muted">Saved presets, library settings, local device ID, and activation are stored by the CEP panel. They remain available across updates when the extension identity stays the same.</p>
+    </section>
+
+    <section class="card" style="margin-top: 22px;">
+      <h2>Troubleshooting</h2>
+      <ul>
+        <li>If the extension does not appear, confirm the folder is inside the CEP extensions directory.</li>
+        <li>If activation asks again after an update, confirm the extension ID was not changed in the manifest.</li>
+        <li>If the download fails, check that the build zip exists inside the website <code>dist</code> folder.</li>
+        <li>If Google sign-in fails, confirm this GitHub Pages domain is added in Firebase authorized domains.</li>
+      </ul>
+    </section>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      signInWithPopup,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      getDocs,
+      limit,
+      query,
+      runTransaction,
+      serverTimestamp,
+      where
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyDIYKsXi2nV3Qe3qjCfzyLb-qdMRAP345w",
+      authDomain: "the-curve-factory.firebaseapp.com",
+      projectId: "the-curve-factory",
+      storageBucket: "the-curve-factory.firebasestorage.app",
+      messagingSenderId: "62729959550",
+      appId: "1:62729959550:web:4fb9459f1b63204c30802f",
+      measurementId: "G-YNWL8SVW7Z"
+    };
+
+    const DEVICE_STORAGE_KEY = "curveFactory.requestDeviceId.v1";
+    const ISSUED_LICENSE_STORAGE_KEY = "curveFactory.issuedLicense.v1";
+
+    const app = initializeApp(FIREBASE_CONFIG);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    const authStatus = document.getElementById("authStatus");
+    const signInButton = document.getElementById("signInButton");
+    const signOutButton = document.getElementById("signOutButton");
+    const form = document.getElementById("licenseForm");
+    const nameInput = document.getElementById("name");
+    const emailInput = document.getElementById("email");
+    const countryInput = document.getElementById("country");
+    const requestButton = document.getElementById("requestButton");
+    const message = document.getElementById("message");
+    const licenseResult = document.getElementById("licenseResult");
+    const licenseKeyText = document.getElementById("licenseKeyText");
+    const copyKeyButton = document.getElementById("copyKey");
+    const resetLocalData = document.getElementById("resetLocalData");
+    const deviceIdPreview = document.getElementById("deviceIdPreview");
+    const downloadPanel = document.getElementById("downloadPanel");
+    const emailLink = document.getElementById("emailLink");
+
+    let currentUser = null;
+    let turnstileToken = "";
+
+    function makeId(prefix) {
+      const random = Math.random().toString(36).slice(2).toUpperCase();
+      const time = Date.now().toString(36).toUpperCase();
+      return `${prefix}-${time}-${random}`;
+    }
+
+    function getRequestDeviceId() {
+      let deviceId = localStorage.getItem(DEVICE_STORAGE_KEY);
+
+      if (!deviceId) {
+        deviceId = makeId("REQ");
+        localStorage.setItem(DEVICE_STORAGE_KEY, deviceId);
+      }
+
+      return deviceId;
+    }
+
+    function setMessage(text, type) {
+      message.textContent = text;
+      message.className = type ? `message ${type}` : "message";
+    }
+
+    function setFormEnabled(enabled) {
+      nameInput.disabled = !enabled;
+      countryInput.disabled = !enabled;
+      requestButton.disabled = !enabled;
+    }
+
+    async function hasIssuedLicense(fieldName, value) {
+      const existing = await getDocs(query(
+        collection(db, "licenses"),
+        where(fieldName, "==", value),
+        where("issued", "==", true),
+        limit(1)
+      ));
+
+      return !existing.empty;
+    }
+
+    async function findAvailableLicense() {
+      const available = await getDocs(query(
+        collection(db, "licenses"),
+        where("issued", "==", false),
+        limit(1)
+      ));
+
+      return available.empty ? null : available.docs[0];
+    }
+
+    async function issueLicense(user) {
+      if (await hasIssuedLicense("issuedToEmail", user.email)) {
+        throw new Error("Email already has a license");
+      }
+
+      if (await hasIssuedLicense("requestDeviceId", user.requestDeviceId)) {
+        throw new Error("This device/browser already has a license");
+      }
+
+      const availableLicense = await findAvailableLicense();
+
+      if (!availableLicense) {
+        throw new Error("No licenses available");
+      }
+
+      const licenseRef = doc(db, "licenses", availableLicense.id);
+
+      await runTransaction(db, async (transaction) => {
+        const snapshot = await transaction.get(licenseRef);
+
+        if (!snapshot.exists()) {
+          throw new Error("Selected license no longer exists");
+        }
+
+        if (snapshot.data().issued === true) {
+          throw new Error("Selected license was already issued. Try again.");
+        }
+
+        transaction.update(licenseRef, {
+          issued: true,
+          issuedToEmail: user.email,
+          issuedToName: user.name,
+          country: user.country,
+          requestDeviceId: user.requestDeviceId,
+          issuedAt: serverTimestamp()
+        });
+      });
+
+      return availableLicense.id;
+    }
+
+    function showIssuedLicense(key, email) {
+      licenseKeyText.textContent = key;
+      licenseResult.style.display = "block";
+      downloadPanel.style.display = "block";
+      localStorage.setItem(ISSUED_LICENSE_STORAGE_KEY, key);
+
+      const subject = encodeURIComponent("The Curve Factory License Key");
+      const body = encodeURIComponent(`Your The Curve Factory license key is:\n\n${key}\n\nUse this key in the plugin activation screen.`);
+      emailLink.href = `mailto:${encodeURIComponent(email)}?subject=${subject}&body=${body}`;
+    }
+
+    window.onTurnstileSuccess = function (token) {
+      turnstileToken = token;
+      setMessage("", "");
+    };
+
+    window.onTurnstileError = function () {
+      turnstileToken = "";
+      setMessage("CAPTCHA failed", "error");
+    };
+
+    window.onTurnstileExpired = function () {
+      turnstileToken = "";
+      setMessage("CAPTCHA failed", "error");
+    };
+
+    signInButton.addEventListener("click", async function () {
+      try {
+        setMessage("Opening Google sign-in...", "");
+        await signInWithPopup(auth, provider);
+      } catch (error) {
+        if (error.code === "auth/configuration-not-found") {
+          setMessage("Firebase Authentication is not configured. Enable Authentication > Google sign-in in Firebase Console.", "error");
+          return;
+        }
+
+        if (error.code === "auth/unauthorized-domain") {
+          setMessage("This domain is not authorized in Firebase Authentication. Add 127.0.0.1, localhost, or your GitHub Pages domain.", "error");
+          return;
+        }
+
+        setMessage(error.message, "error");
+      }
+    });
+
+    signOutButton.addEventListener("click", async function () {
+      await signOut(auth);
+    });
+
+    onAuthStateChanged(auth, function (user) {
+      currentUser = user;
+
+      if (!user) {
+        authStatus.textContent = "Not signed in";
+        signInButton.classList.remove("hidden");
+        signOutButton.classList.add("hidden");
+        emailInput.value = "";
+        nameInput.value = "";
+        setFormEnabled(false);
+        setMessage("Sign in with Google to request your free license.", "");
+        return;
+      }
+
+      authStatus.textContent = `Signed in as ${user.email}`;
+      signInButton.classList.add("hidden");
+      signOutButton.classList.remove("hidden");
+      emailInput.value = user.email || "";
+      nameInput.value = user.displayName || "";
+      setFormEnabled(true);
+      setMessage("", "");
+    });
+
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      if (!currentUser) {
+        setMessage("Sign in with Google first.", "error");
+        return;
+      }
+
+      if (!turnstileToken) {
+        setMessage("CAPTCHA failed", "error");
+        return;
+      }
+
+      requestButton.disabled = true;
+      licenseResult.style.display = "none";
+      downloadPanel.style.display = "none";
+      setMessage("Issuing license...", "");
+
+      try {
+        const key = await issueLicense({
+          name: nameInput.value.trim(),
+          email: currentUser.email,
+          country: countryInput.value.trim(),
+          requestDeviceId: getRequestDeviceId()
+        });
+
+        showIssuedLicense(key, currentUser.email);
+        setMessage("License issued successfully", "success");
+      } catch (error) {
+        const duplicateMessages = [
+          "Email already has a license",
+          "This device/browser already has a license",
+          "No licenses available"
+        ];
+        const messageText = duplicateMessages.includes(error.message)
+          ? "You have already been issued a license."
+          : error.message;
+        setMessage(messageText, "error");
+      } finally {
+        requestButton.disabled = false;
+      }
+    });
+
+    copyKeyButton.addEventListener("click", async function () {
+      await navigator.clipboard.writeText(licenseKeyText.textContent);
+      copyKeyButton.textContent = "Copied";
+
+      setTimeout(function () {
+        copyKeyButton.textContent = "Copy License Key";
+      }, 1200);
+    });
+
+    resetLocalData.addEventListener("click", function () {
+      localStorage.removeItem(ISSUED_LICENSE_STORAGE_KEY);
+      licenseResult.style.display = "none";
+      downloadPanel.style.display = "none";
+      setMessage("Local test data reset. Device ID was kept.", "");
+    });
+
+    deviceIdPreview.textContent = getRequestDeviceId();
+    setFormEnabled(false);
+  </script>
+</body>
+</html>
