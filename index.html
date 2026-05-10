@@ -604,10 +604,16 @@
         <li>Paste it into your Adobe CEP extensions folder.</li>
         <li>Windows: <code>C:\Program Files (x86)\Common Files\Adobe\CEP\extensions\</code></li>
         <li>macOS: <code>~/Library/Application Support/Adobe/CEP/extensions/</code></li>
+        <li>On Windows, if the extension does not appear in After Effects, enable Adobe CEP extension loading with the registry commands below.</li>
         <li>Restart After Effects.</li>
         <li>Open <strong>Window &gt; Extensions &gt; Curve Factory</strong>.</li>
         <li>Enter the same email used here and paste your license key.</li>
       </ol>
+      <p class="muted">Windows CEP registry commands:</p>
+      <pre><code>reg add "HKCU\Software\Adobe\CSXS.10" /v PlayerDebugMode /t REG_SZ /d 1 /f
+reg add "HKCU\Software\Adobe\CSXS.11" /v PlayerDebugMode /t REG_SZ /d 1 /f
+reg add "HKCU\Software\Adobe\CSXS.12" /v PlayerDebugMode /t REG_SZ /d 1 /f
+reg add "HKCU\Software\Adobe\CSXS.13" /v PlayerDebugMode /t REG_SZ /d 1 /f</code></pre>
     </section>
 
     <section class="card" style="margin-top: 22px;">
